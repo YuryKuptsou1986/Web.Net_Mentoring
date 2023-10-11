@@ -1,0 +1,19 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+<div class="d-flex align-items-center justify-content-center vh-100">
+    <div class="text-center">
+    <h1 class="display-1 fw-bold">Error</h1>
+    <p class="fs-3"> <span class="text-danger">Opps!</span> Something wrong. Please contact to administrator.</p>
+
+    <h3>Error Detailes</h3>
+    <p>Path: @Model.Path</p>
+        @foreach (var message in Model.ErrorMessages) {
+        <p>Error message: @message</p>
+        }
+    </p>
+    <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-primary">Go Home</a>
+    @* <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a> *@
+    </div>
+</div>
