@@ -2,12 +2,15 @@
 using Homework.DBContext.Repositories.Implementaion;
 using Homework.DBContext.Repositories.Interfaces;
 using Homework.Entities.Configuration;
+using Homework.Filters;
 using Homework.Mapper;
 using Homework.MIddleware;
 using Homework.Services.Implementation;
 using Homework.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
 using System.Reflection;
 
 namespace Homework
@@ -35,17 +38,30 @@ namespace Homework
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ISupplierService, SupplierService>();
+            builder.Services.AddScoped<INorthwindImageConverterService, NorthwindImageConverterService>();
 
             // settings
             builder.Services.Configure<ProductSettings>(
                 builder.Configuration.GetSection(
                 key: nameof(ProductSettings)));
-            
+            builder.Services.Configure<ImageCacheSettings>(
+                builder.Configuration.GetSection(
+                key: nameof(ImageCacheSettings)));
+            builder.Services.Configure<FilterLoggingSettings>(
+                builder.Configuration.GetSection(
+                key: nameof(FilterLoggingSettings)));
+
             // mapper
             builder.Services.AddAutoMapper(typeof(AppMapperConfiguration));
 
             builder.Host.UseSerilog((ctx, sp) => {
                 sp.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration);
+            });
+
+            // filters
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add<ActionLoggingFilter>();
             });
 
             var app = builder.Build();
@@ -69,6 +85,8 @@ namespace Homework
                 app.UseHsts();
             }
 
+            app.UseMiddleware<ImageCacheMiddleware>();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -80,6 +98,11 @@ namespace Homework
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
+            app.MapControllerRoute(
+                name: "images",
+                pattern: "images/{image_id}",
+                defaults: new { controller = "Image", action = "Index" }
+                );
             app.Run();
         }
     }

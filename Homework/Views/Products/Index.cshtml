@@ -76,24 +76,10 @@
                                 <i class="fas fa-pencil"></i>  Edit
                             </button>
                         </a>
-
-
-                      @*   <div class="form-group">
-                            <button type="button" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash-can"></i> Delete
-                            </button>
-                        </div> *@
-
                         <form asp-action="Delete">
                             <input type="hidden" name="id" asp-for="@item.ProductId" />
                             <input type="submit" value="Delete" class="btn btn-danger btn-sm" />                            
                         </form>
-
-                        @* <a asp-action="@Url.Action("Delete", new { id = item.ProductId })">
-                            <button type="button" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash-can"></i> Delete
-                            </button>
-                        </a> *@
                     </div>
                 </td>
             </tr>

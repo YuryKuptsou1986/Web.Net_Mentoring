@@ -11,6 +11,9 @@
             <th>
                 Picture
             </th>
+            <th>
+
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -23,8 +26,14 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    ---
-                    @* @Html.DisplayFor(modelItem => item.Picture) *@
+                    <img src="@Url.Action("GetImage", new {image_id = item.CategoryId})" style="width:100px; height:100px;">
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = item.CategoryId })">
+                        <button type="button" class="btn btn-primary btn-sm">
+                            <i class="fas fa-pencil"></i>  Edit
+                        </button>
+                    </a>
                 </td>
             </tr>
         }

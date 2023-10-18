@@ -129,7 +129,10 @@ namespace HomeWork_Introduction.Controllers
 
         private async Task<bool> ValidateProductModel(ProductBaseModel product)
         {
-            return (await ValidateCategory(product)) && (await ValidateSupplier(product));
+            var supplierValid = await ValidateCategory(product);
+            var categoryValid = await ValidateSupplier(product);
+
+            return (supplierValid) && (categoryValid);
         }
 
         private async Task<bool> ValidateSupplier(ProductBaseModel product)
