@@ -1,4 +1,4 @@
-﻿using Homework.Models;
+﻿using Homework.Entities;
 using Newtonsoft.Json;
 
 namespace Homework.MIddleware

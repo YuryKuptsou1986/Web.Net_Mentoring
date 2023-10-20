@@ -1,9 +1,7 @@
-﻿using Homework.Models;
+﻿using Homework.Entities;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Diagnostics;
-using System.IO;
 
 namespace Homework.Controllers
 {

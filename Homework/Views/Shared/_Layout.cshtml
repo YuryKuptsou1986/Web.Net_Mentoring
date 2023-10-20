@@ -10,6 +10,7 @@
 </head>
 <body>
     <header>
+        <Breadcrumb></Breadcrumb>
         <div class="collapse" id="navbarToggleExternalContent" data-bs-theme="light" style="">
             <div class="bg-light p-4">
                 <ul class="navbar-nav flex-grow-1">
@@ -33,6 +34,9 @@
             </div>
         </nav>
     </header>
+    <div id="header">
+        @RenderSection("Header", false)
+    </div>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -40,8 +44,13 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - Homework - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div id="footer">
+            @RenderSection("Footer", false)
+            @if (!IsSectionDefined("Footer")) {
+                <div class="container">
+                    &copy; 2023 - Homework - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                </div>
+            }
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

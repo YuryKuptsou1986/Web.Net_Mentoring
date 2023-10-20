@@ -27,6 +27,7 @@
                 </td>
                 <td>
                     <img src="@Url.Action("GetImage", new {image_id = item.CategoryId})" style="width:100px; height:100px;">
+                    @Html.NorthwindImageLink(item.CategoryId, "Image link")
                 </td>
                 <td>
                     <a href="@Url.Action("Edit", new { id = item.CategoryId })">
@@ -39,3 +40,10 @@
         }
     </tbody>
 </table>
+
+@section Footer {
+    <div class="container">
+        <p class="text-warning">User can't edit 'Categories'</p>
+    </div>
+    
+}

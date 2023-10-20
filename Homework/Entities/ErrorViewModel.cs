@@ -1,4 +1,4 @@
-namespace Homework.Models
+namespace Homework.Entities
 {
     public class ErrorViewModel
     {

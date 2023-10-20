@@ -12,7 +12,10 @@ namespace HomeWork_Introduction.Controllers
         private readonly ICategoryService _categoryService;
         private readonly INorthwindImageConverterService _imageConverterService;
 
-        public CategoriesController(ILogger<CategoriesController> logger, IMapper mapper, ICategoryService categoryService, INorthwindImageConverterService imageConverterService)
+        public CategoriesController(ILogger<CategoriesController> logger,
+            IMapper mapper,
+            ICategoryService categoryService,
+            INorthwindImageConverterService imageConverterService)
         {
             _logger = logger;
             _mapper = mapper;

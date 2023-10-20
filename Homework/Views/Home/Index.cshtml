@@ -1,7 +1,16 @@
 ﻿@{
+    Layout = "_Layout_Home";
+}
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
+    <div>
+        <div><a northwind-id="2">Image link with TagHelper</a></div>
+        <div>@Html.NorthwindImageLink(2, "Image link with HtmlHelper")</div>
+    </div>
+
 </div>

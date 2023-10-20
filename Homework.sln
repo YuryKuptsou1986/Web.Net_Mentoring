@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Homework", "Homework\Homework.csproj", "{098DF070-37E5-4CFF-8FEA-0A92C817A446}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeworkTests", "HomeworkTests\HomeworkTests.csproj", "{4AF9A63F-E3BB-44A2-816F-F11339F61506}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeworkTests", "HomeworkTests\HomeworkTests.csproj", "{4AF9A63F-E3BB-44A2-816F-F11339F61506}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
