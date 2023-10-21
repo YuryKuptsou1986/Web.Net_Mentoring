@@ -1,0 +1,19 @@
+﻿@using Homework.Entities;
+
+<nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+    <div class="mt-max-size">
+        <ol class="breadcrumb">
+            @if (@ViewData["Breadcrumb"] != null) {
+                var breadcrumbs = (IEnumerable<Breadcrumb>)ViewData["Breadcrumb"];
+
+                @foreach (var link in breadcrumbs) {
+                    if (link.Active) {
+                        <li class="breadcrumb-item"><a href="@Url.Action(link.Action, link.Controller)">@link.Controller</a></li>
+                    } else {
+                        <li class="breadcrumb-item active mt-bread-item" aria-current="page">@link.Text</li>
+                    }
+                }
+            }
+        </ol>
+    </div>
+</nav>

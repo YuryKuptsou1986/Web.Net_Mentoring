@@ -10,7 +10,6 @@
 </head>
 <body>
     <header>
-        <Breadcrumb></Breadcrumb>
         <div class="collapse" id="navbarToggleExternalContent" data-bs-theme="light" style="">
             <div class="bg-light p-4">
                 <ul class="navbar-nav flex-grow-1">
@@ -33,6 +32,7 @@
                 </button>
             </div>
         </nav>
+        @await Component.InvokeAsync("Breadcrumbs")
     </header>
     <div id="header">
         @RenderSection("Header", false)

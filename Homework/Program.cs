@@ -7,10 +7,10 @@ using Homework.Mapper;
 using Homework.MIddleware;
 using Homework.Services.Implementation;
 using Homework.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using System;
+using System.Globalization;
 using System.Reflection;
 
 namespace Homework
@@ -23,6 +23,20 @@ namespace Homework
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Localization
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            builder.Services.Configure<RequestLocalizationOptions>(options => {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en")
+                };
+
+                options.DefaultRequestCulture = new RequestCulture("en");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
 
             // database
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
