@@ -1,29 +1,31 @@
-﻿using Homework.DBContext;
-using Homework.DBContext.Repositories.Implementaion;
-using Homework.DBContext.Repositories.Interfaces;
+﻿using DAL;
+using BLL;
 using Homework.Entities.Configuration;
 using Homework.Filters;
-using Homework.Mapper;
 using Homework.MIddleware;
 using Homework.Services.Implementation;
 using Homework.Services.Interfaces;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Globalization;
 using System.Reflection;
 
 namespace Homework
 {
+
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // configure dependency from other libraries
+            builder.Services.AddDalDependencies(builder.Configuration);
+            builder.Services.AddBllDependencies();
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            
             // Localization
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -38,20 +40,7 @@ namespace Homework
                 options.SupportedUICultures = supportedCultures;
             });
 
-            // database
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<NorthwindContext>(options =>
-                options.UseSqlServer(connectionString));
-
-            // Repositories
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-            builder.Services.AddScoped<IProductRepository, ProductRepository>();
-            builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
-
             // Services
-            builder.Services.AddScoped<ICategoryService, CategoryService>();
-            builder.Services.AddScoped<IProductService, ProductService>();
-            builder.Services.AddScoped<ISupplierService, SupplierService>();
             builder.Services.AddScoped<INorthwindImageConverterService, NorthwindImageConverterService>();
 
             // settings
@@ -66,8 +55,9 @@ namespace Homework
                 key: nameof(FilterLoggingSettings)));
 
             // mapper
-            builder.Services.AddAutoMapper(typeof(AppMapperConfiguration));
+            builder.Services.AddAutoMapper(typeof(Homework.Mapper.AppMappingProfile));
 
+            // logs
             builder.Host.UseSerilog((ctx, sp) => {
                 sp.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration);
             });

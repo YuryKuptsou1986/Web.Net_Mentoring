@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
+using BLL.Mappings;
+using BLL.Services.Interfaces;
 using Homework.Entities.Configuration;
-using Homework.Entities.ViewModel.Category;
-using Homework.Entities.ViewModel.Product;
-using Homework.Entities.ViewModel.Supplier;
-using Homework.Mapper;
-using Homework.Services.Interfaces;
 using HomeWork_Introduction.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
+using ViewModel.Category;
+using ViewModel.Product;
+using ViewModel.Supplier;
 
 namespace HomeworkTests.Controllers
 {
@@ -36,8 +36,9 @@ namespace HomeworkTests.Controllers
             SetupEntities();
             _loggerMock = new Mock<ILogger<ProductsController>>();
 
-            var mapperProfile = new AppMapperConfiguration();
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(mapperProfile));
+            var BllMapperProfile = new BLL.Mappings.AppMappingProfile();
+            var MvcMapperProfile = new Homework.Mapper.AppMappingProfile();
+            var mapperConfiguration = new MapperConfiguration(cfg => { cfg.AddProfile(BllMapperProfile); cfg.AddProfile(MvcMapperProfile); });
             _mapper = new Mapper(mapperConfiguration);
 
             _productServiceMock = new Mock<IProductService>();

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Homework.Entities.ViewModel.Category;
-using Homework.Mapper;
+using BLL.Mappings;
+using BLL.Services.Interfaces;
 using Homework.Services.Interfaces;
 using HomeWork_Introduction.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
+using ViewModel.Category;
 
 namespace HomeworkTests.Controllers
 {
@@ -18,7 +19,7 @@ namespace HomeworkTests.Controllers
         public async Task Index_ReturnViewResult_Categories()
         {
             // Arrange
-            var mapperProfile = new AppMapperConfiguration();
+            var mapperProfile = new AppMappingProfile();
             var mapperConfiguration = new MapperConfiguration(cfg => cfg.AddProfile(mapperProfile));
             var mapper = new Mapper(mapperConfiguration);
 

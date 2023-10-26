@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using BLL.Services.Interfaces;
 using Homework.Entities.ViewModel.Category;
 using Homework.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using ViewModel.Category;
 
 namespace HomeWork_Introduction.Controllers
 {
@@ -51,25 +53,26 @@ namespace HomeWork_Introduction.Controllers
                 return NotFound();
             }
 
-            var categoryUpdateModel = _mapper.Map<CategoryUpdateModel>(category);
+            var categoryPageUpdateModel = _mapper.Map<CategoryPageUpdateModel>(category);
 
-            return View(categoryUpdateModel);
+            return View(categoryPageUpdateModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CategoryId, CategoryName, Description, Picture, FormFile")] CategoryUpdateModel categoryUpdateModel)
+        public async Task<IActionResult> Edit(int id, [Bind("CategoryId, CategoryName, Description, Picture, FormFile")] CategoryPageUpdateModel categoryPageUpdateModel)
         {
             // ToDo not working
-            if (id != categoryUpdateModel.CategoryId) {
+            if (id != categoryPageUpdateModel.CategoryId) {
                 return NotFound();
             }
             if (ModelState.IsValid) {
-                if (categoryUpdateModel.FormFile != null) {
-                    categoryUpdateModel.Picture = _imageConverterService.ConvertToNorthwindImage(categoryUpdateModel.FormFile);
+                if (categoryPageUpdateModel.FormFile != null) {
+                    categoryPageUpdateModel.Picture = _imageConverterService.ConvertToNorthwindImage(categoryPageUpdateModel.FormFile);
                 }
 
                 try {
+                    var categoryUpdateModel = _mapper.Map<CategoryUpdateModel>(categoryPageUpdateModel);
                     await _categoryService.UpdateAsync(categoryUpdateModel);
                 } catch (Exception ex) {
                     throw;

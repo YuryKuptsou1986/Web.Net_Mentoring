@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
+using BLL.Services.Interfaces;
 using Homework.Entities.Configuration;
-using Homework.Entities.ViewModel.Category;
-using Homework.Entities.ViewModel.Product;
-using Homework.Entities.ViewModel.Supplier;
-using Homework.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
+using ViewModel.Category;
+using ViewModel.Product;
+using ViewModel.Supplier;
 
 namespace HomeWork_Introduction.Controllers
 {
