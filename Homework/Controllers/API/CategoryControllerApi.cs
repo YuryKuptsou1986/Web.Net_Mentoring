@@ -1,4 +1,5 @@
 ﻿using BLL.Services.Interfaces;
+using Homework.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 
@@ -11,10 +12,12 @@ namespace HomeworkWebApi.Controllers
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
+        private readonly INorthwindImageConverterService _imageConverterService;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, INorthwindImageConverterService imageConverterService)
         {
             _categoryService = categoryService;
+            _imageConverterService = imageConverterService;
         }
 
         /// <summary>
@@ -36,6 +39,11 @@ namespace HomeworkWebApi.Controllers
         public async Task<IActionResult> GetCategoryList()
         {
             var categories = await _categoryService.GetAllAsync().ConfigureAwait(false);
+
+            foreach (var item in categories)
+            {
+                item.Picture = _imageConverterService.ConvertToNormalImage(item.Picture);
+            }
             return Ok(categories);
         }
     }

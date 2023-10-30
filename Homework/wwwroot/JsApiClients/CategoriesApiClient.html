@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Product App</title>
+</head>
+<body>
+
+    <div>
+        <div>
+            <a href="/">Back to home</a>
+        </div>
+        <h2>All Products</h2>
+        <table id="products" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Category Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Picture</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="../lib/jquery/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script>
+    var uri = '/api/categories';
+
+    $(document).ready(function () {
+      $.getJSON(uri)
+          .done(function (data) {
+              let trHTML = '';
+              $.each(data, function (key, item) {
+                  trHTML += '<tr scope="row"><td>' + item.categoryId
+                      + '</td><td>' + item.categoryName
+                      + '</td><td>' + item.description
+                      + '</td><td><img style="width:100px; height:100px;" src="data:image/jpg;base64,' + item.picture + '"></td></tr > ';
+            });
+              $('#products').append(trHTML);
+          });
+    });
+    </script>
+</body>
+</html>

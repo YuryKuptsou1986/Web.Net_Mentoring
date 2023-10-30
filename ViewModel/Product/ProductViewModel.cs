@@ -9,9 +9,7 @@ namespace ViewModel.Product
     {
         public int ProductId { get; set; }
 
-        [JsonIgnore]
         public CategoryViewModel Category { get; set; }
-        [JsonIgnore]
         public SupplierViewModel Supplier { get; set; }
         [JsonIgnore]
         public IEnumerable<OrderDetailViewModel> OrderDetails { get; set; }
