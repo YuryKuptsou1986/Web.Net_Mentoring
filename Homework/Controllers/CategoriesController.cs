@@ -22,13 +22,13 @@ namespace HomeWork_Introduction.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var categories = await _categoryService.GetAllAsync().ConfigureAwait(false);
+            var categories = await _categoryService.GetAllAsync();
             return View(categories);
         }
 
         public async Task<IActionResult> GetImage(int image_id)
         {
-            var category = await _categoryService.GetAsync(image_id).ConfigureAwait(false);
+            var category = await _categoryService.GetAsync(image_id);
 
             var image = _imageConverterService.ConvertToNormalImage(category.Picture);
 
@@ -37,7 +37,7 @@ namespace HomeWork_Introduction.Controllers
         
         public async Task<IActionResult> Images(int image_id)
         {
-            return await GetImage(image_id).ConfigureAwait(false);
+            return await GetImage(image_id);
         }
 
         public async Task<IActionResult> Edit(int id)

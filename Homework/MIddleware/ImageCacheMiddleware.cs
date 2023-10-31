@@ -65,13 +65,17 @@ namespace Homework.MIddleware
             if (request.Method == HttpMethod.Get.ToString()) {
 
                 if (request.Query.ContainsKey(ImageIdQueryParam)) {
-                    var imageName = request.Query[ImageIdQueryParam] + ImageExtension;
+                    // prevent Path Traversal attacks. Id should be integer.
+                    if (Int32.TryParse(request.Query[ImageIdQueryParam].ToString(), out int imageId)) {
 
-                    imageStream.Seek(0, SeekOrigin.Begin);
+                        var imageName = imageId + ImageExtension;
 
-                    lock (_lock) {
-                        ClearCasheIfExceedImageCount(GetCacheFolderPath());
-                        SaveImage(imageStream, imageName);
+                        imageStream.Seek(0, SeekOrigin.Begin);
+
+                        lock (_lock) {
+                            ClearCasheIfExceedImageCount(GetCacheFolderPath());
+                            SaveImage(imageStream, imageName);
+                        }
                     }
                 }
             }
@@ -82,7 +86,11 @@ namespace Homework.MIddleware
             if (request.Method == HttpMethod.Get.ToString()) {
 
                 if (request.Query.ContainsKey(ImageIdQueryParam)) {
-                    var imageName = request.Query[ImageIdQueryParam] + ImageExtension;
+                    // prevent Path Traversal attacks. Id should be integer.
+                    if (!Int32.TryParse(request.Query[ImageIdQueryParam].ToString(), out int imageId)) {
+                        return false;
+                    }
+                    var imageName = imageId + ImageExtension;
 
                     var filePath = BuildServerPath(imageName);
                     byte[] image = null;
