@@ -20,10 +20,10 @@ namespace Homework.Controllers
 
         public async Task<IActionResult> Index(int image_id)
         {
-            var category = await _categoryService.GetAsync(image_id).ConfigureAwait(false);
+            var category = await _categoryService.GetAsync(image_id);
             var image = _imageConverterService.ConvertToNormalImage(category.Picture);
 
-            return File(image, "image/jpg");
+            return File(image, "image/bmp");
         }
     }
 }

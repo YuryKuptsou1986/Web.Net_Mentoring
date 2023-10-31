@@ -19,6 +19,9 @@ namespace Homework.Filters
         {
             if (_filterLoggingSettings.Value.EnableLogging) {
                 _logger.LogInformation($"'{context.RouteData.Values["controller"]}/{context.RouteData.Values["action"]}' started.");
+                if (context.ActionArguments.Any()) {
+                    _logger.LogInformation($"Action arguments: {string.Join(";", context.ActionArguments.Select(x => $"{x.Key} = {x.Value}"))}");
+                }
             }
         }
 
