@@ -5,8 +5,16 @@ namespace DAL.DBContext;
 
 public partial class NorthwindContext : DbContext, INorthwindContext
 {
-    public NorthwindContext()
+    private readonly string _connectionString;
+
+    public NorthwindContext(string connectionString)
     {
+        _connectionString = connectionString;
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer(_connectionString);
     }
 
     public NorthwindContext(DbContextOptions<NorthwindContext> options)
