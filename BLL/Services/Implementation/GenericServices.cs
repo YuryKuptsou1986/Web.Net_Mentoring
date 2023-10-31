@@ -4,7 +4,7 @@ using DAL.Repositories.Interfaces;
 
 namespace BLL.Services.Implementation
 {
-    internal class GenericService<T, TViewModel, TCreateModel, TUpdateModel> : IGenericService<TViewModel, TCreateModel, TUpdateModel>
+    internal abstract class GenericService<T, TViewModel, TCreateModel, TUpdateModel> : IGenericService<TViewModel, TCreateModel, TUpdateModel>
         where T : class
         where TViewModel : class
         where TCreateModel : class
@@ -19,11 +19,7 @@ namespace BLL.Services.Implementation
             _mapper = mapper;
         }
 
-        public async Task AddAsync(TCreateModel entity)
-        {
-            var createEntity = _mapper.Map<T>(entity);
-            await _repository.AddAsync(createEntity);
-        }
+        public abstract Task<int> AddAsync(TCreateModel entity);
 
         public async Task DeleteAsync(int id)
         {

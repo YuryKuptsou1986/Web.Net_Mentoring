@@ -10,7 +10,7 @@
         Task<TViewModel> GetAsync(Guid id);
         Task<IEnumerable<TViewModel>> GetTopAsync(int top);
         Task<IEnumerable<TViewModel>> GetAllAsync();
-        Task AddAsync(TCreateModel entity);
+        Task<int> AddAsync(TCreateModel entity);
         Task DeleteAsync(int id);
         Task DeleteAsync(string id);
         Task DeleteAsync(Guid id);

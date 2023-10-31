@@ -22,5 +22,12 @@ namespace BLL.Services.Implementation
             category.Picture = image;
             await _repository.UpdateAsync(category);
         }
+
+        public override async Task<int> AddAsync(CategoryCreateModel entity)
+        {
+            var createEntity = _mapper.Map<Category>(entity);
+            await _repository.AddAsync(createEntity);
+            return createEntity.CategoryId;
+        }
     }
 }

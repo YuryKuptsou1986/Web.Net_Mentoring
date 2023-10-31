@@ -12,5 +12,12 @@ namespace BLL.Services.Implementation
                                         ProductUpdateModel>, IProductService
     {
         public ProductService(IProductRepository repository, IMapper mapper) : base(repository, mapper) { }
+
+        public override async Task<int> AddAsync(ProductCreateModel entity)
+        {
+            var createEntity = _mapper.Map<Product>(entity);
+            await _repository.AddAsync(createEntity);
+            return createEntity.ProductId;
+        }
     }
 }

@@ -1,0 +1,25 @@
+﻿// install Kiota
+dotnet tool install --global Microsoft.OpenApi.Kiota
+
+// create project .net
+dotnet new console -o KiotaWebApiClient
+
+// go to project folder
+cd KiotaWebApiClient
+
+// create gitignore file
+dotnet new gitignore
+
+// add packages
+dotnet add package Microsoft.Kiota.Abstractions
+dotnet add package Microsoft.Kiota.Http.HttpClientLibrary
+dotnet add package Microsoft.Kiota.Serialization.Form
+dotnet add package Microsoft.Kiota.Serialization.Json
+dotnet add package Microsoft.Kiota.Serialization.Text
+dotnet add package Microsoft.Kiota.Serialization.Multipart
+
+// generate yaml file from swagger
+iwr https://localhost:7195/swagger/v1/swagger.yaml -o api-v1.yaml
+
+// generate kiota clint
+kiota generate -l CSharp -c KiotaWebApiClient -n KiotaWebApi.Client -d ./api-v1.yaml -o ./Client

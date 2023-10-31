@@ -22,6 +22,27 @@ namespace HomeworkWebApi.Controllers
         }
 
         /// <summary>
+        /// Get a single product by id
+        /// </summary>
+        /// <response code="200">The product was found</response>
+        /// <response code="404">The product was not found</response>
+        /// <response code="406">When a request is specified in an unsupported content type using the Accept header</response>
+        /// <response code="415">When a response is specified in an unsupported content type</response>
+        /// <response code="422">If query params structure is valid, but the values fail validation</response>
+        /// <response code="500">A server fault occurred</response>
+        [HttpGet("{productId:int}", Name = nameof(GetProductById))]
+        [ProducesResponseType(typeof(ProductViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+        [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetProductById([FromRoute] int productId)
+        {
+            var product = await _productService.GetAsync(productId);
+            return Ok(product);
+        }
+
+        /// <summary>
         /// Get a paginated list of products. The pagination metadata is contained within 'x-pagination' header of response.
         /// </summary>
         /// <response code="200">A paginated list of products</response>
@@ -31,7 +52,7 @@ namespace HomeworkWebApi.Controllers
         /// <response code="422">If query params structure is valid, but the values fail validation</response>
         /// <response code="500">A server fault occurred</response>
         [HttpGet(Name = nameof(GetProductList))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<ProductViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
@@ -96,8 +117,8 @@ namespace HomeworkWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _productService.AddAsync(product);
-            return Ok();
+            var id = await _productService.AddAsync(product);
+            return CreatedAtRoute(nameof(GetProductById), new { productId = id }, product);
         }
 
         /// <summary>

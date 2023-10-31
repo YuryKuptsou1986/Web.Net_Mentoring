@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BLL.Services.Interfaces;
+using Domain.Entities;
 using Homework.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
@@ -25,6 +26,27 @@ namespace HomeworkWebApi.Controllers
         }
 
         /// <summary>
+        /// Get a single category by id
+        /// </summary>
+        /// <response code="200">The category was found</response>
+        /// <response code="404">The category was not found</response>
+        /// <response code="406">When a request is specified in an unsupported content type using the Accept header</response>
+        /// <response code="415">When a response is specified in an unsupported content type</response>
+        /// <response code="422">If query params structure is valid, but the values fail validation</response>
+        /// <response code="500">A server fault occurred</response>
+        [HttpGet("{categoryId:int}", Name = nameof(GetCategoryById))]
+        [ProducesResponseType(typeof(CategoryViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+        [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCategoryById([FromRoute] int categoryId)
+        {
+            var category = await _categoryService.GetAsync(categoryId);
+            return Ok(category);
+        }
+
+        /// <summary>
         /// Get a paginated list of categories. The pagination metadata is contained within 'x-pagination' header of response.
         /// </summary>
         /// <response code="200">A paginated list of categories</response>
@@ -34,7 +56,7 @@ namespace HomeworkWebApi.Controllers
         /// <response code="422">If query params structure is valid, but the values fail validation</response>
         /// <response code="500">A server fault occurred</response>
         [HttpGet(Name = nameof(GetCategoryList))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<CategoryViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
@@ -155,8 +177,8 @@ namespace HomeworkWebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _categoryService.AddAsync(category);
-            return Ok();
+            var id = await _categoryService.AddAsync(category);
+            return CreatedAtRoute(nameof(GetCategoryById), new { categoryId = id }, category);
         }
 
         /// <summary>

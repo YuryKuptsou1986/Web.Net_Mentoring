@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewModel", "ViewModel\View
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL", "BLL\BLL.csproj", "{486B3BF8-737B-4802-9150-04D9EF93F5F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleWebApiClient", "ConsoleWebApiClient\ConsoleWebApiClient.csproj", "{572851EC-6B6D-4E25-BB4F-2C5E0D9113A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleWebApiClient", "ConsoleWebApiClient\ConsoleWebApiClient.csproj", "{572851EC-6B6D-4E25-BB4F-2C5E0D9113A0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KiotaWebApiClient", "KiotaWebApiClient\KiotaWebApiClient.csproj", "{07F9A866-50AB-45F0-A5DC-5B0CEFB395AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{572851EC-6B6D-4E25-BB4F-2C5E0D9113A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{572851EC-6B6D-4E25-BB4F-2C5E0D9113A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{572851EC-6B6D-4E25-BB4F-2C5E0D9113A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07F9A866-50AB-45F0-A5DC-5B0CEFB395AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07F9A866-50AB-45F0-A5DC-5B0CEFB395AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07F9A866-50AB-45F0-A5DC-5B0CEFB395AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07F9A866-50AB-45F0-A5DC-5B0CEFB395AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
