@@ -10,8 +10,8 @@ namespace BLL.Services.Implementation
         where TCreateModel : class
         where TUpdateModel : class
     {
-        private readonly IBaseRepository<T> _repository;
-        private readonly IMapper _mapper;
+        protected readonly IBaseRepository<T> _repository;
+        protected readonly IMapper _mapper;
 
         public GenericService(IBaseRepository<T> repository, IMapper mapper)
         {

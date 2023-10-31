@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Localization;
 using Serilog;
 using System.Globalization;
 using System.Reflection;
+using Microsoft.OpenApi.Models;
 
 namespace Homework
 {
@@ -68,7 +69,20 @@ namespace Homework
                 options.Filters.Add<ActionLoggingFilter>();
             });
 
+            // swagger
+            builder.Services.AddSwaggerGen(
+            c => {
+                c.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "Northwind Service" });
+            });
+
             var app = builder.Build();
+
+            // swagger
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "version v1");
+            });
 
             // log start up info
             IWebHostEnvironment environment = app.Environment;
@@ -87,6 +101,7 @@ namespace Homework
                 app.UseMiddleware<ExceptionMiddleware>();
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                
             }
 
             app.UseMiddleware<ImageCacheMiddleware>();

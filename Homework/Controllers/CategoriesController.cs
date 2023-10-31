@@ -62,7 +62,6 @@ namespace HomeWork_Introduction.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CategoryId, CategoryName, Description, Picture, FormFile")] CategoryPageUpdateModel categoryPageUpdateModel)
         {
-            // ToDo not working
             if (id != categoryPageUpdateModel.CategoryId) {
                 return NotFound();
             }
