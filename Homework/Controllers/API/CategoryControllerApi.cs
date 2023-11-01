@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using BLL.Services.Interfaces;
-using Domain.Entities;
-using Homework.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 using ViewModel.Category;
@@ -16,13 +14,11 @@ namespace HomeworkWebApi.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
-        private readonly INorthwindImageConverterService _imageConverterService;
 
-        public CategoryController(ICategoryService categoryService, IMapper mapper, INorthwindImageConverterService imageConverterService)
+        public CategoryController(ICategoryService categoryService, IMapper mapper)
         {
             _categoryService = categoryService;
             _mapper = mapper;
-            _imageConverterService = imageConverterService;
         }
 
         /// <summary>
@@ -66,10 +62,6 @@ namespace HomeworkWebApi.Controllers
         {
             var categories = await _categoryService.GetAllAsync().ConfigureAwait(false);
 
-            foreach (var item in categories)
-            {
-                item.Picture = _imageConverterService.ConvertToNormalImage(item.Picture);
-            }
             return Ok(categories);
         }
 
@@ -93,9 +85,7 @@ namespace HomeworkWebApi.Controllers
         {
             var category = await _categoryService.GetAsync(imageId).ConfigureAwait(false);
 
-            var image = _imageConverterService.ConvertToNormalImage(category.Picture);
-
-            return File(image, "image/bmp");
+            return File(category.Picture, "image/bmp");
         }
 
         /// <summary>
@@ -117,7 +107,6 @@ namespace HomeworkWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateImage([FromRoute] int imageId, [FromBody] byte[] image)
         {
-            image = _imageConverterService.ConvertToNorthwindImage(image);
             await _categoryService.UpdateImage(imageId, image);
             return NoContent();
         }
@@ -148,8 +137,6 @@ namespace HomeworkWebApi.Controllers
             if (!(await _categoryService.ExistsAsync(category.CategoryId))) {
                 return NotFound();
             }
-
-            category.Picture = _imageConverterService.ConvertToNorthwindImage(category.Picture);
 
             await _categoryService.UpdateAsync(category);
             return NoContent();

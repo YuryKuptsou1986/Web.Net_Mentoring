@@ -12,17 +12,17 @@ namespace HomeWork_Introduction.Controllers
         private readonly ILogger<CategoriesController> _logger;
         private readonly IMapper _mapper;
         private readonly ICategoryService _categoryService;
-        private readonly INorthwindImageConverterService _imageConverterService;
+        private readonly IFormFileToStreamConverter _formFileToStreamConverter;
 
         public CategoriesController(ILogger<CategoriesController> logger,
             IMapper mapper,
             ICategoryService categoryService,
-            INorthwindImageConverterService imageConverterService)
+            IFormFileToStreamConverter formFileToStreamConverter)
         {
             _logger = logger;
             _mapper = mapper;
             _categoryService = categoryService;
-            _imageConverterService = imageConverterService;
+            _formFileToStreamConverter = formFileToStreamConverter;
         }
 
         public async Task<IActionResult> Index()
@@ -35,9 +35,7 @@ namespace HomeWork_Introduction.Controllers
         {
             var category = await _categoryService.GetAsync(image_id);
 
-            var image = _imageConverterService.ConvertToNormalImage(category.Picture);
-
-            return File(image, "image/bmp");
+            return File(category.Picture, "image/bmp");
         }
         
         public async Task<IActionResult> Images(int image_id)
@@ -67,7 +65,7 @@ namespace HomeWork_Introduction.Controllers
             }
             if (ModelState.IsValid) {
                 if (categoryPageUpdateModel.FormFile != null) {
-                    categoryPageUpdateModel.Picture = _imageConverterService.ConvertToNorthwindImage(categoryPageUpdateModel.FormFile);
+                    categoryPageUpdateModel.Picture = _formFileToStreamConverter.ConvertToStream(categoryPageUpdateModel.FormFile);
                 }
 
                 try {

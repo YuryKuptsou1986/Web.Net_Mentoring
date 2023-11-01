@@ -42,7 +42,7 @@ namespace Homework
             });
 
             // Services
-            builder.Services.AddSingleton<INorthwindImageConverterService, NorthwindImageConverterService>();
+            builder.Services.AddSingleton<IFormFileToStreamConverter, FormFileToStreamConverter>();
 
             // settings
             builder.Services.Configure<ProductSettings>(

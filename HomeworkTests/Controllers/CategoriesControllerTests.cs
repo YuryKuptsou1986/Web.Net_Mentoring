@@ -25,11 +25,11 @@ namespace HomeworkTests.Controllers
 
             var mockLogger = new Mock<ILogger<CategoriesController>>();
             var mockCategoryService = new Mock<ICategoryService>();
-            var mockImageConverterService = new Mock<INorthwindImageConverterService>();
+            var mockFormFileConverterService = new Mock<IFormFileToStreamConverter>();
             var categories = CreateCategoriesList();
             mockCategoryService.Setup(x=>x.GetAllAsync()).ReturnsAsync(categories);
 
-            var controller = new CategoriesController(mockLogger.Object, mapper, mockCategoryService.Object, mockImageConverterService.Object);
+            var controller = new CategoriesController(mockLogger.Object, mapper, mockCategoryService.Object, mockFormFileConverterService.Object);
 
             // Act
             var result = await controller.Index();

@@ -13,12 +13,15 @@ namespace DAL
         {
             // database
             var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            services.AddSingleton<INorthwindContext, NorthwindContext>(serviceProvider => new NorthwindContext(connectionString));
+            services.AddDbContext<NorthwindContext>(options =>
+                    options.UseSqlServer(connectionString));
+
+            services.AddTransient<INorthwindContext, NorthwindContext>();
 
             // Repositories
-            services.AddSingleton<ICategoryRepository, CategoryRepository>();
-            services.AddSingleton<IProductRepository, ProductRepository>();
-            services.AddSingleton<ISupplierRepository, SupplierRepository>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<ISupplierRepository, SupplierRepository>();
 
             return services;
         }

@@ -9,9 +9,10 @@ namespace BLL
     {
         public static IServiceCollection AddBllDependencies(this IServiceCollection services)
         {
-            services.AddSingleton<ICategoryService, CategoryService>();
-            services.AddSingleton<IProductService, ProductService>();
-            services.AddSingleton<ISupplierService, SupplierService>();
+            services.AddTransient<ICategoryService, CategoryService>();
+            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<ISupplierService, SupplierService>();
+            services.AddSingleton<INorthwindImageConverterService, NorthwindImageConverterService>();
 
             services.AddAutoMapper(typeof(AppMappingProfile));
 

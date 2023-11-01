@@ -7,14 +7,12 @@ public partial class NorthwindContext : DbContext, INorthwindContext
 {
     private readonly string _connectionString;
 
-    public NorthwindContext(string connectionString)
+    public NorthwindContext()
     {
-        _connectionString = connectionString;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(_connectionString);
     }
 
     public NorthwindContext(DbContextOptions<NorthwindContext> options)
