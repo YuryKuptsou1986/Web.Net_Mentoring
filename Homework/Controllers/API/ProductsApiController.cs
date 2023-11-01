@@ -10,12 +10,12 @@ namespace HomeworkWebApi.Controllers
     [ApiController]
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
-    public class ProductControllerApi : Controller
+    public class ProductsApiController : Controller
     {
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
 
-        public ProductControllerApi(IProductService productService, IMapper mapper)
+        public ProductsApiController(IProductService productService, IMapper mapper)
         {
             _productService = productService;
             _mapper = mapper;
