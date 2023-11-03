@@ -7,7 +7,7 @@
                 var breadcrumbs = (IEnumerable<Breadcrumb>)ViewData["Breadcrumb"];
 
                 @foreach (var link in breadcrumbs) {
-                    if (link.Active) {
+                    if (!link.Active) {
                         <li class="breadcrumb-item"><a href="@Url.Action(link.Action, link.Controller)">@link.Controller</a></li>
                     } else {
                         <li class="breadcrumb-item active mt-bread-item" aria-current="page">@link.Text</li>

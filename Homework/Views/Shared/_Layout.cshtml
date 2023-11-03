@@ -10,33 +10,35 @@
 </head>
 <body>
     <header>
-        <div class="collapse" id="navbarToggleExternalContent" data-bs-theme="light" style="">
-            <div class="bg-light p-4">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid">
-                <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-        </nav>
-        @await Component.InvokeAsync("Breadcrumbs")
-    </header>
-    <div id="header">
         @RenderSection("Header", false)
-    </div>
+        @if (!IsSectionDefined("Header"))
+        {
+            <div class="collapse" id="navbarToggleExternalContent" data-bs-theme="light" style="">
+                <div class="bg-light p-4">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <nav class="navbar navbar-light bg-light">
+                <div class="container-fluid">
+                    <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+            </nav>
+            @await Component.InvokeAsync("Breadcrumbs")
+        }
+    </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

@@ -33,7 +33,6 @@ namespace Homework.ViewComponents
 
             breadcrumbs.Add(new Breadcrumb {
                 Action = "Index",
-                Active = true,
                 Controller = "Home",
                 Text = "Home"
             });
@@ -41,7 +40,7 @@ namespace Homework.ViewComponents
             // For controller
             var breadcrumbController = new Breadcrumb {
                 Action = "Index",
-                Active = action != "Index",
+                Active = action == "Index",
                 Controller = controllerName,
                 Text = controllerName
             };
@@ -56,7 +55,7 @@ namespace Homework.ViewComponents
             // For action
             var breadcrumbAction = new Breadcrumb {
                 Action = action,
-                Active = false,
+                Active = true,
                 Controller = controllerName,
                 Text = _localizer[action]
             };
