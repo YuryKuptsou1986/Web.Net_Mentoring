@@ -1,4 +1,4 @@
-﻿using DAL;
+using DAL;
 using BLL;
 using Homework.Entities.Configuration;
 using Homework.Filters;
@@ -10,6 +10,12 @@ using Serilog;
 using System.Globalization;
 using System.Reflection;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Homework.Data;
+using Homework.Areas.Identity.Data;
+using System.Configuration;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Homework
 {
@@ -19,6 +25,27 @@ namespace Homework
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddRazorPages();
+            //var connectionString = builder.Configuration.GetConnectionString("UserIdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'UserIdentityContextConnection' not found.");
+
+            builder.Services.AddTransient<IEmailSender, EmailSender>(i =>
+                new EmailSender(
+                    builder.Configuration["EmailSender:Host"],
+                    builder.Configuration.GetValue<int>("EmailSender:Port"),
+                    builder.Configuration.GetValue<bool>("EmailSender:EnableSSL"),
+                    builder.Configuration["EmailSender:UserName"],
+                    builder.Configuration["EmailSender:Password"]
+                )
+            );
+
+
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+            builder.Services.AddDbContext<UserIdentityContext>(options => options.UseSqlServer(connectionString));
+
+            builder.Services.AddDefaultIdentity<UserIdentity>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<UserIdentityContext>();
 
             // configure dependency from other libraries
             builder.Services.AddDalDependencies(builder.Configuration);
@@ -111,6 +138,7 @@ namespace Homework
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
@@ -122,6 +150,9 @@ namespace Homework
                 pattern: "images/{image_id}",
                 defaults: new { controller = "Image", action = "Index" }
                 );
+
+            app.MapRazorPages();
+
             app.Run();
         }
     }

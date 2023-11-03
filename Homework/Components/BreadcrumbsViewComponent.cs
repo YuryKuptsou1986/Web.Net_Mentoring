@@ -22,8 +22,11 @@ namespace Homework.ViewComponents
         private IEnumerable<Breadcrumb> ConfigureBreadcrumb()
         {
             var breadcrumbs = new List<Breadcrumb>();
-
-            var controllerName = Request.RouteValues["controller"].ToString();
+            var controller = Request.RouteValues["controller"];
+            if(controller == null) { 
+                return breadcrumbs; 
+            }
+            var controllerName = controller.ToString();
             var action = Request.RouteValues["action"].ToString();
 
             if (controllerName == "Home") {
