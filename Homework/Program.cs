@@ -10,42 +10,29 @@ using Serilog;
 using System.Globalization;
 using System.Reflection;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Homework.Data;
 using Homework.Areas.Identity.Data;
-using System.Configuration;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace Homework
 {
-
     public class Program
     {
+
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddRazorPages();
-            //var connectionString = builder.Configuration.GetConnectionString("UserIdentityContextConnection") ?? throw new InvalidOperationException("Connection string 'UserIdentityContextConnection' not found.");
+            // setting for smpt server
+            ConfigureSmtp(builder);
 
-            builder.Services.AddTransient<IEmailSender, EmailSender>(i =>
-                new EmailSender(
-                    builder.Configuration["EmailSender:Host"],
-                    builder.Configuration.GetValue<int>("EmailSender:Port"),
-                    builder.Configuration.GetValue<bool>("EmailSender:EnableSSL"),
-                    builder.Configuration["EmailSender:UserName"],
-                    builder.Configuration["EmailSender:Password"]
-                )
-            );
-
-
-
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-            builder.Services.AddDbContext<UserIdentityContext>(options => options.UseSqlServer(connectionString));
-
-            builder.Services.AddDefaultIdentity<UserIdentity>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<UserIdentityContext>();
+            // ASP.Net Core Identity
+            ConfigureIndentity(builder);
 
             // configure dependency from other libraries
             builder.Services.AddDalDependencies(builder.Configuration);
@@ -53,34 +40,15 @@ namespace Homework
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            
+
             // Localization
-            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-
-            builder.Services.Configure<RequestLocalizationOptions>(options => {
-                var supportedCultures = new[]
-                {
-                    new CultureInfo("en")
-                };
-
-                options.DefaultRequestCulture = new RequestCulture("en");
-                options.SupportedCultures = supportedCultures;
-                options.SupportedUICultures = supportedCultures;
-            });
+            ConfigureLocalization(builder);
 
             // Services
-            builder.Services.AddSingleton<IFormFileToStreamConverter, FormFileToStreamConverter>();
+            ConfigureServices(builder);
 
             // settings
-            builder.Services.Configure<ProductSettings>(
-                builder.Configuration.GetSection(
-                key: nameof(ProductSettings)));
-            builder.Services.Configure<ImageCacheSettings>(
-                builder.Configuration.GetSection(
-                key: nameof(ImageCacheSettings)));
-            builder.Services.Configure<FilterLoggingSettings>(
-                builder.Configuration.GetSection(
-                key: nameof(FilterLoggingSettings)));
+            ConfigureSettings(builder);
 
             // mapper
             builder.Services.AddAutoMapper(typeof(Homework.Mapper.AppMappingProfile));
@@ -112,15 +80,7 @@ namespace Homework
             });
 
             // log start up info
-            IWebHostEnvironment environment = app.Environment;
-            app.Logger.LogInformation(environment.ContentRootPath);
-            app.Logger.LogInformation(environment.WebRootPath);
-            app.Logger.LogInformation(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            app.Logger.LogInformation(Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase));
-            app.Logger.LogInformation(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
-            app.Logger.LogInformation(Directory.GetCurrentDirectory());
-            app.Logger.LogInformation(AppDomain.CurrentDomain.BaseDirectory);
-            app.Logger.LogInformation(AppContext.BaseDirectory);
+            LogStartUpInfo(app);
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment()) {
@@ -128,7 +88,6 @@ namespace Homework
                 app.UseMiddleware<ExceptionMiddleware>();
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-                
             }
 
             app.UseMiddleware<ImageCacheMiddleware>();
@@ -153,7 +112,139 @@ namespace Homework
 
             app.MapRazorPages();
 
+            var scope = app.Services.CreateScope();
+            
+            var roleManager = (RoleManager<IdentityRole>)scope.ServiceProvider.GetService(typeof(RoleManager<IdentityRole>));
+            var roles = (IOptions<RoleSettings>)scope.ServiceProvider.GetService(typeof(IOptions<RoleSettings>));
+            var userManager = (UserManager<UserIdentity>)scope.ServiceProvider.GetService(typeof(UserManager<UserIdentity>));
+
+            Task.Run(() => CreateRoles(roleManager, roles)).Wait();
+            Task.Run(() => CreateAdmin(userManager, roles)).Wait();
+
             app.Run();
+        }
+
+        private static async Task CreateRoles(RoleManager<IdentityRole> roleManager, IOptions<RoleSettings> roles)
+        {
+            foreach (string rol in roles.Value.Roles) {
+                if (!await roleManager.RoleExistsAsync(rol)) {
+                    await roleManager.CreateAsync(new IdentityRole(rol));
+                }
+            }
+        }
+
+        private static async Task CreateAdmin(UserManager<UserIdentity> userManager, IOptions<RoleSettings> roles)
+        {
+            var admin = await userManager.FindByEmailAsync(roles.Value.AdminEmail);
+
+            if(admin == null) {
+                admin = new UserIdentity {
+                    Email = roles.Value.AdminEmail,
+                    EmailConfirmed = false,
+                    UserName = roles.Value.AdminEmail,
+                    NormalizedUserName = roles.Value.AdminRole.ToUpperInvariant(),
+                    NormalizedEmail = roles.Value.AdminEmail.ToUpperInvariant(),
+                };
+
+                // generate random password
+                int length = 20;
+                string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
+                var random = new Random();
+                string password = new string(Enumerable.Repeat(chars, length)
+                  .Select(s => s[random.Next(s.Length)]).ToArray());
+
+                // Set random password. Admin will change it when login at first time
+                // 1. Resend confirmation. Will send link to email.
+                // 2. Confirm email.
+                // 3. Reset password. Will send link to email.
+                // 4. Enter new password and login.
+                await userManager.CreateAsync(admin, password);
+                // add user to role
+                await userManager.AddToRoleAsync(admin, roles.Value.AdminRole);
+            }
+        }
+
+        private static void ConfigureServices(WebApplicationBuilder builder)
+        {
+            builder.Services.AddSingleton<IFormFileToStreamConverter, FormFileToStreamConverter>();
+        }
+
+        private static void ConfigureLocalization(WebApplicationBuilder builder)
+        {
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            builder.Services.Configure<RequestLocalizationOptions>(options => {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en")
+                };
+
+                options.DefaultRequestCulture = new RequestCulture("en");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
+        }
+
+        private static void ConfigureIndentity(WebApplicationBuilder builder)
+        {
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+            builder.Services.AddDbContext<UserIdentityContext>(options => options.UseSqlServer(connectionString));
+
+            builder.Services.AddDefaultIdentity<UserIdentity>()
+                .AddRoles<IdentityRole>()
+                .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<UserIdentityContext>();
+
+            builder.Services.AddAuthorization();
+
+            // roles
+            builder.Services.AddAuthorization(options => {
+                options.AddPolicy("Administrator", policy => policy.RequireRole("Administrator"));
+                options.AddPolicy("User", policy => policy.RequireRole("User"));
+            });
+        }
+
+        private static void ConfigureSmtp(WebApplicationBuilder builder)
+        {
+            builder.Services.AddTransient<IEmailSender, EmailSender>(i =>
+                new EmailSender(
+                    builder.Configuration["EmailSender:Host"],
+                    builder.Configuration.GetValue<int>("EmailSender:Port"),
+                    builder.Configuration.GetValue<bool>("EmailSender:EnableSSL"),
+                    builder.Configuration["EmailSender:UserName"],
+                    builder.Configuration["EmailSender:Password"]
+                )
+            );
+        }
+
+        private static void ConfigureSettings(WebApplicationBuilder builder)
+        {
+            builder.Services.Configure<ProductSettings>(
+                builder.Configuration.GetSection(
+                key: nameof(ProductSettings)));
+            builder.Services.Configure<ImageCacheSettings>(
+                builder.Configuration.GetSection(
+                key: nameof(ImageCacheSettings)));
+            builder.Services.Configure<FilterLoggingSettings>(
+                builder.Configuration.GetSection(
+                key: nameof(FilterLoggingSettings)));
+            builder.Services.Configure<RoleSettings>(
+                builder.Configuration.GetSection(
+                key: nameof(RoleSettings)));
+        }
+
+        private static void LogStartUpInfo(WebApplication app)
+        {
+            IWebHostEnvironment environment = app.Environment;
+            app.Logger.LogInformation(environment.ContentRootPath);
+            app.Logger.LogInformation(environment.WebRootPath);
+            app.Logger.LogInformation(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            app.Logger.LogInformation(Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase));
+            app.Logger.LogInformation(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
+            app.Logger.LogInformation(Directory.GetCurrentDirectory());
+            app.Logger.LogInformation(AppDomain.CurrentDomain.BaseDirectory);
+            app.Logger.LogInformation(AppContext.BaseDirectory);
         }
     }
 }
