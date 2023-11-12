@@ -16,6 +16,9 @@ using Homework.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Homework
 {
@@ -187,6 +190,23 @@ namespace Homework
 
         private static void ConfigureIndentity(WebApplicationBuilder builder)
         {
+            builder.Services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            // azure AD
+            builder.Services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+                .AddAzureAD(options => { 
+                    builder.Configuration.Bind("AzureAd", options);
+                    options.CookieSchemeName = IdentityConstants.ExternalScheme;
+                });
+            builder.Services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options => {
+                options.Authority = options.Authority + "/v2.0/";
+                options.TokenValidationParameters.ValidateIssuer = true;
+            });
+
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
             builder.Services.AddDbContext<UserIdentityContext>(options => options.UseSqlServer(connectionString));
