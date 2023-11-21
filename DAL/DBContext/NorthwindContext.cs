@@ -18,6 +18,7 @@ public partial class NorthwindContext : DbContext, INorthwindContext
     public NorthwindContext(DbContextOptions<NorthwindContext> options)
         : base(options)
     {
+        Database.EnsureCreated();
     }
 
     public virtual DbSet<AlphabeticalListOfProduct> AlphabeticalListOfProducts { get; set; }
@@ -87,6 +88,8 @@ public partial class NorthwindContext : DbContext, INorthwindContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<AlphabeticalListOfProduct>(entity =>
         {
             entity.ToView("Alphabetical list of products");

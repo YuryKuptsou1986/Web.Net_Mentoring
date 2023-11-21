@@ -1,5 +1,4 @@
 ﻿using Homework.Areas.Identity.Data;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +9,7 @@ public class UserIdentityContext : IdentityDbContext<UserIdentity>
     public UserIdentityContext(DbContextOptions<UserIdentityContext> options)
         : base(options)
     {
+        Database.EnsureCreated();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
