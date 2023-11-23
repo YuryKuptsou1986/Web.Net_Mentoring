@@ -19,14 +19,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication;
+using System.Security.Cryptography;
 
 namespace Homework
 {
     public class Program
     {
-
-
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +41,12 @@ namespace Homework
             builder.Services.AddBllDependencies();
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            var mvcBuilder = builder.Services.AddControllersWithViews(options => {
+                options.Filters.Add<ActionLoggingFilter>();
+            });
+            if (builder.Environment.IsDevelopment()) {
+                mvcBuilder.AddRazorRuntimeCompilation();
+            }
 
             // Localization
             ConfigureLocalization(builder);
@@ -61,18 +65,13 @@ namespace Homework
                 sp.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration);
             });
 
-            // filters
-            builder.Services.AddControllersWithViews(options =>
-            {
-                options.Filters.Add<ActionLoggingFilter>();
-            });
 
             // swagger
             builder.Services.AddSwaggerGen(
             c => {
                 c.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "Northwind Service" });
             });
-
+            
             var app = builder.Build();
 
             // swagger
@@ -92,7 +91,7 @@ namespace Homework
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            
             app.UseMiddleware<ImageCacheMiddleware>();
 
             app.UseHttpsRedirection();
@@ -121,8 +120,8 @@ namespace Homework
             var roles = (IOptions<RoleSettings>)scope.ServiceProvider.GetService(typeof(IOptions<RoleSettings>));
             var userManager = (UserManager<UserIdentity>)scope.ServiceProvider.GetService(typeof(UserManager<UserIdentity>));
 
-            Task.Run(() => CreateRoles(roleManager, roles)).Wait();
-            Task.Run(() => CreateAdmin(userManager, roles)).Wait();
+            await CreateRoles(roleManager, roles);
+            await CreateAdmin(userManager, roles);
 
             app.Run();
         }
@@ -150,11 +149,7 @@ namespace Homework
                 };
 
                 // generate random password
-                int length = 20;
-                string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
-                var random = new Random();
-                string password = new string(Enumerable.Repeat(chars, length)
-                  .Select(s => s[random.Next(s.Length)]).ToArray());
+                string password = Convert.ToBase64String(RandomNumberGenerator.GetBytes(20));
 
                 // Set random password. Admin will change it when login at first time
                 // 1. Resend confirmation. Will send link to email.
