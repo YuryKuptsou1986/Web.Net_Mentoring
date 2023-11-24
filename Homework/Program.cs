@@ -48,6 +48,12 @@ namespace Homework
                 mvcBuilder.AddRazorRuntimeCompilation();
             }
 
+            // Web optimizer
+            builder.Services.AddWebOptimizer(pipeline => {
+                pipeline.MinifyCssFiles("/css/**/*.css");
+                pipeline.MinifyJsFiles("/js/**/*.js");
+            });
+
             // Localization
             ConfigureLocalization(builder);
 
@@ -65,7 +71,6 @@ namespace Homework
                 sp.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration);
             });
 
-
             // swagger
             builder.Services.AddSwaggerGen(
             c => {
@@ -80,7 +85,7 @@ namespace Homework
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "version v1");
             });
-
+            
             // log start up info
             LogStartUpInfo(app);
 
@@ -95,6 +100,7 @@ namespace Homework
             app.UseMiddleware<ImageCacheMiddleware>();
 
             app.UseHttpsRedirection();
+            app.UseWebOptimizer();
             app.UseStaticFiles();
 
             app.UseRouting();
